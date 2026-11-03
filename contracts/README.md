@@ -13,14 +13,14 @@ Every agent writes **two things** for the next agent:
 
 Every item in the contract points to the exact part of the report that proves it. The next agent reads the contract in full and opens the report only to check something.
 
-The next agent then writes a third file, `ack.json` (the **acknowledgement**), saying what it did with each item. The orchestrator (agent 00) refuses to start a stage until the earlier stage's contract and acknowledgement both pass `validate.py`.
+The next agent then writes a third file, `ack.json` (the **acknowledgement**), saying what it did with each item. The orchestrator (the orchestrator) refuses to start a stage until the earlier stage's contract and acknowledgement both pass `validate.py`.
 
 ```
 agent N  ──writes──►  handoff.json + report.md
                           │
 agent N+1 ──reads all of handoff.json──►  writes ack.json (used / overridden / not-applicable, with a reason)
                           │
-agent 00 runs:  python3 contracts/validate.py handoff.json --ack ack.json   (must pass)
+the orchestrator runs:  python3 contracts/validate.py handoff.json --ack ack.json   (must pass)
 ```
 
 ## Where files live
@@ -44,7 +44,7 @@ A contract has an **envelope** and two kinds of content: **entries** and **table
 ```json
 {
   "contract": "blue-agent/handoff@1",
-  "agent": "01-data-cartographer",
+  "agent": "profile",
   "tenant": "...", "environment": "...",
   "window": {"from": "2026-10-22", "to": "2026-10-30"},
   "source": "spans",                      // spans | profiling | mixed
@@ -65,7 +65,7 @@ A contract has an **envelope** and two kinds of content: **entries** and **table
   "value": {"spans_per_day": 10618404, "share": 0.5},
   "evidence": {"files": ["data/f_blank_paths.csv"]},
   "confidence": 0.9,
-  "consumers": ["02-key-evaluator", "03-view-builder"]
+  "consumers": ["attribution", "03-view-builder"]
 }
 ```
 
@@ -98,8 +98,8 @@ Tables hold lists of the same thing (all APIs, all keys, all masked fields). A t
 
 ```json
 {
-  "contract_ref": "runs/.../01-data-cartographer/handoff.json",
-  "agent": "02-key-evaluator",
+  "contract_ref": "runs/.../profile/handoff.json",
+  "agent": "attribution",
   "answers": [
     {"ref": "exclude.egress-copy", "status": "used", "where": "key-scorecard.csv header; every query"},
     {"ref": "decision.user-identifier-is-client", "status": "overridden", "reason": "tested: 3% of values are per-person"}
@@ -124,29 +124,19 @@ Tables hold lists of the same thing (all APIs, all keys, all masked fields). A t
 
 | Agent | Main entries | Main tables |
 |---|---|---|
-| 01 data-cartographer | filters, excludes, lanes, decisions on auth and keys, gaps, open items | apis, unnamed_groups, clubbed_names, naming_quirks, auth_types, keys, pii_fields, distribution, long_tail (when tail_apis > 0; `fact.api-count` keys: named_total, listed, tail_apis, tail_spans, unnamed_groups) |
-| 02 key-evaluator | key ranking decisions, dead-key facts | keys (ranked, with tier and coverage) |
-| 03 view-builder | view facts, normalization decisions | views (name, grain, window, rows, history start) |
-| 04 population-baseliner | baseline decisions per class | baselines (class, metric, range, horizon) |
-| 05 channel-attributor | channel decisions, unknown residual | channels, allowlist |
-| 06 entity-extractor | extraction decisions | entities, capability_map |
-| 07 threat-modeler | trust-boundary decisions | abuse_cases, coverage_matrix |
-| 08 hypothesis-generator | ranking decisions | hypotheses (signal needs, falsifier) |
-| 09 view-architect | view-design decisions, cost flags | view_specs |
-| 10 detection-engine | applicability facts, no-signal facts | applicability, candidates |
-| 11 falsifier | verdict decisions, benign patterns | verdicts, findings |
-| 12 policy-generator | policy decisions, unmonitorable gaps | policies, entity_derivations_final |
+| profile | filters, excludes, lanes, decisions on auth and keys, gaps, open items | apis, unnamed_groups, clubbed_names, naming_quirks, auth_types, keys, pii_fields, distribution, long_tail (when tail_apis > 0; `fact.api-count` keys: named_total, listed, tail_apis, tail_spans, unnamed_groups) |
+| attribution | key ranking decisions, dead-key facts | keys (ranked, with tier and coverage) |
 
-Only agent 01 has a schema file so far. The others follow the same steps: pick the entries and tables from their existing `## Outputs`, write `schemas/<agent>.json`, add a `## Reads` list to the next agent.
+Only the profile stage has a schema file so far. The others follow the same steps: pick the entries and tables from their existing `## Outputs`, write `schemas/<agent>.json`, add a `## Reads` list to the next agent.
 
 ## Checking a contract
 
 ```bash
 python3 contracts/validate.py <handoff.json>
-python3 contracts/validate.py <handoff.json> --ack <ack.json> --reader 02-key-evaluator
+python3 contracts/validate.py <handoff.json> --ack <ack.json> --reader attribution
 ```
 
-## Attribution definitions (agents 02 and 06)
+## Attribution definitions
 
 Agents 02 and 06 also write three platform-shaped files: `user-attribution.json`, `session-identification.json`, `entity-definitions.json`. They are not hand-off entries; they are the configuration the platform consumes. Their shape is in `schemas/definitions.json` and is checked by `validate_defs.py`:
 
@@ -155,6 +145,6 @@ python3 contracts/validate_defs.py <dir> [--verify verify.csv]
 ```
 
 - Every definition carries `confidence` (a number from 0 to 1) and `evidence`. Every excluded machine carrier names the test that excluded it.
-- `--verify` takes the `verify.csv` that `agents/02-key-evaluator/tools/verify_defs.py` writes: a definition that extracts nothing on the window fails.
-- Entities carry `source_agent`: `"02"` for the broad, threat-model-driven set, `"06"` for gap-fill only. An agent 06 definition must name the `capability` and `reason` it fills.
+- `--verify` takes the `verify.csv` that `stages/attribution/tools/verify_defs.py` writes: a definition that extracts nothing on the window fails.
+- Entities carry `source_agent`: `"02"` for the broad, threat-model-driven set, `"06"` for gap-fill only. An the entity gap-fill stage (not in this repo) definition must name the `capability` and `reason` it fills.
 - The shapes are inferred from the platform's screens, not confirmed against an export.

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Anchors and bridge APIs: what in this tenant's traffic names a PERSON, and where a person-naming value sits on the same request as a session carrier.
-Agent 02 builds user journeys by chaining session keys from these anchors (agents/02-key-evaluator/tools/keygraph.py), so this is measured here, once, and handed over in profile.json.
+The attribution stage builds user journeys by chaining session keys from these anchors (stages/attribution/tools/keygraph.py), so this is measured here, once, and handed over in profile.json.
   anchors      every value that names a person: the user_identifier column, JWT claims in a bearer header, person-named fields in request bodies, response bodies and query parameters on every API.
                Measured per value: spans, distinct values, APIs, how often it equals user_identifier. verdict: person | person-candidate | not-person.
   bridge_apis  per API: spans, anchored spans, and the reusable cookies and headers on those anchored spans with the share of anchored spans each is on
                (a bridge: the anchor can be carried onto that carrier's other requests; reusable = token-shaped values that repeat across requests),
                and issuers: APIs whose response sets a cookie while the request carries no anchor (login and landing pages, where a journey starts before a person is known).
-  fact.journey-window  the window these were measured on; agent 02 measures journeys on the same window unless told otherwise.
+  fact.journey-window  the window these were measured on; the attribution stage measures journeys on the same window unless told otherwise.
 Writes the tables and entry into <profile>; creates a minimal blue-agent/handoff@1 profile (marked partial) when none exists. No raw value is written.
 Usage: anchors.py --customer <uuid> --env <env> --start 'YYYY-MM-DD HH:MM' --minutes <n> --profile <profile.json> [--apis apis.json] [--min-values 20]"""
 import argparse, csv, json, os, re, subprocess, sys, datetime
@@ -134,19 +134,19 @@ today = datetime.date.today().isoformat()
 end = (datetime.datetime.strptime(a.start, "%Y-%m-%d %H:%M") + datetime.timedelta(minutes=a.minutes)).strftime("%Y-%m-%d %H:%M")
 if os.path.exists(a.profile): prof = json.load(open(a.profile))
 else:
-    prof = {"contract": "blue-agent/handoff@1", "agent": "01-data-cartographer", "tenant": a.tenant or a.customer, "environment": a.env, "window": {"start": a.start, "end": end},
+    prof = {"contract": "blue-agent/handoff@1", "agent": "profile", "tenant": a.tenant or a.customer, "environment": a.env, "window": {"start": a.start, "end": end},
             "source": "span_event_view", "produced_at": today, "partial": True, "report": "profile.md", "entries": [], "tables": {}}
     if a.apis and os.path.exists(a.apis):
         rows = json.load(open(a.apis))["apis"]
         cols = ["api_name", "spans_day", "ips", "clients", "error_share", "lane", "hunt_verdict", "evidence"]
-        prof["tables"]["apis"] = {"columns": cols, "rows": [{c: x.get(c, "") for c in cols} for x in rows], "consumers": ["02-key-evaluator"]}
-    prof["entries"].append({"id": "gap.profile-partial", "kind": "gap", "statement": "This profile holds only the apis table and the anchor tables; the full cartographer run has not been done for this tenant.",
-                            "value": {}, "evidence": {"files": [a.apis] if a.apis else []}, "confidence": 0.95, "consumers": ["02-key-evaluator"]})
-def table(rows, cols): return {"columns": cols, "rows": [{c: r.get(c, "") for c in cols} for r in rows], "consumers": ["02-key-evaluator"]}
+        prof["tables"]["apis"] = {"columns": cols, "rows": [{c: x.get(c, "") for c in cols} for x in rows], "consumers": ["attribution"]}
+    prof["entries"].append({"id": "gap.profile-partial", "kind": "gap", "statement": "This profile holds only the apis table and the anchor tables; the full profile run has not been done for this tenant.",
+                            "value": {}, "evidence": {"files": [a.apis] if a.apis else []}, "confidence": 0.95, "consumers": ["attribution"]})
+def table(rows, cols): return {"columns": cols, "rows": [{c: r.get(c, "") for c in cols} for r in rows], "consumers": ["attribution"]}
 prof["tables"]["anchors"] = table(anchors, ["anchor", "location", "key", "claim", "spans", "distinct", "apis", "eq_user_identifier", "verdict", "evidence"])
 prof["tables"]["bridge_apis"] = table(bridges, ["api_name", "role", "spans", "anchored_spans", "sets_cookie_no_anchor", "carriers", "issues", "login_fields"])
-ent = {"id": "fact.journey-window", "kind": "fact", "statement": f"Anchors and bridges were measured on {a.start} for {a.minutes} minutes ({total_spans} spans); agent 02 measures journeys on the same window.",
-       "value": {"start": a.start, "minutes": a.minutes, "spans": total_spans}, "evidence": {"files": ["tools/anchors.py"]}, "confidence": 0.95, "consumers": ["02-key-evaluator"],
+ent = {"id": "fact.journey-window", "kind": "fact", "statement": f"Anchors and bridges were measured on {a.start} for {a.minutes} minutes ({total_spans} spans); the attribution stage measures journeys on the same window.",
+       "value": {"start": a.start, "minutes": a.minutes, "spans": total_spans}, "evidence": {"files": ["tools/anchors.py"]}, "confidence": 0.95, "consumers": ["attribution"],
        "first_seen": today, "last_confirmed": today}
 prof["entries"] = [e for e in prof["entries"] if e["id"] != "fact.journey-window"] + [ent]
 os.makedirs(os.path.dirname(os.path.abspath(a.profile)), exist_ok=True)

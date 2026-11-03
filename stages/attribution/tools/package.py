@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Package agent 02's definitions and their live verification into the deliverable.
+"""Package the attribution stage's definitions and their live verification into the deliverable.
 Two files. <out>.json holds ONLY the platform's own payloads, items of {"mutation": <GraphQL mutation name>, "variables": <exact variables, created disabled>}, submitted as-is.
 <out>-review.json (same order) holds {kind, mutation, name, assessment} per item plus not_extracted: for the reviewer, never sent. The assessment carries
   entity_name, description, environment, services, apis, methods, confidence{score,components}, evidence, definitions (nested, every transformation and condition), ready_to_submit, notes

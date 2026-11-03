@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Turn discover.py output into user-attribution, session-identification and entity definitions. No tenant, API or header names in here.
 Every carrier is scored on measured tests; name hints are only a tiebreak and mark the result `inferred`. Machines are listed under `excluded`.
-Usage: derive_defs.py --dir <discover out> --env <environment> [--apis apis.json (agent 01)] --out <dir>
+Usage: derive_defs.py --dir <discover out> --env <environment> [--apis apis.json (the profile stage)] --out <dir>
 Writes: user-attribution.json, session-identification.json, entity-definitions.json, carriers.csv (the scorecard)."""
 import argparse, csv, json, os, re, collections
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--dir", required=True); ap.add_argument("--env", required=True); ap.add_argument("--apis"); ap.add_argument("--profile", help="agent 01 profile.json (preferred over --apis: the apis table gives lanes)"); ap.add_argument("--out", required=True)
+ap.add_argument("--dir", required=True); ap.add_argument("--env", required=True); ap.add_argument("--apis"); ap.add_argument("--profile", help="the profile stage profile.json (preferred over --apis: the apis table gives lanes)"); ap.add_argument("--out", required=True)
 ap.add_argument("--min-users", type=int, default=5, help="fewer distinct values than this cannot be a population of people")
 ap.add_argument("--shared-ips-per-value", type=float, default=20, help="more distinct IPs per value than this: a shared credential, not one person")
 ap.add_argument("--consumer-share", type=float, default=0.5, help="share of a carrier's spans on consumer-lane APIs to call it end-user")
@@ -37,7 +37,7 @@ I = lambda r, k: int(float(r.get(k) or 0))
 win = rd("window")[0] if rd("window") else {}
 WS = I(win, "spans")
 
-# agent 01 context: lane and verdict per API. Absent: lane unknown, confidence drops to inferred.
+# the profile stage context: lane and verdict per API. Absent: lane unknown, confidence drops to inferred.
 lane, verdict, q3cat = {}, {}, {}
 _api_rows = []
 if a.profile:
@@ -218,7 +218,7 @@ for key, b in sorted(by_key.items(), key=lambda kv: -kv[1]["spans"]):
                       attributes={"userId": attr("body", key), "authType": {"constant": "Login Form"}}, custom_json=False, verdict="end-user", confidence="inferred",
                       evidence=dict(shape=shp, distinct_users=b["dv"], ips_per_value=ipv, consumer_lane_share=share(b["apis"]), notes=["typed at a login or sign-up call: a claim before authentication, so it can include mistyped or attacker-supplied names"])))
 
-# Field identities from agent 01's anchors (tools/anchors.py): request-body, response-body and query fields on any API that name a person.
+# Field identities from the profile stage's anchors (tools/anchors.py): request-body, response-body and query fields on any API that name a person.
 # Server-side and pre-login calls often carry no credential the browser holds, so the person is named only there. `person` means its values are
 # user_identifier values (measured); a `person-candidate` is kept only when its name is a user key, and stays inferred (it may be another id space).
 _done = {("body", k) for k in by_key}
@@ -241,12 +241,12 @@ for r in _fa:
                       description=f"End user named in {r['location'].replace('_', ' ')} field `{r['key']}`", scope=dict(environments=[a.env], services="all", url_regexes=scope_regexes(apis)),
                       attributes={"userId": attr(FKIND[r["location"]], r["key"]), "authType": {"constant": "Request Field" if r["location"] != "response_body" else "Response Field"}}, custom_json=False,
                       verdict="end-user", confidence="measured" if r["verdict"] == "person" else "inferred",
-                      evidence=dict(distinct_users=I(r, "distinct"), spans=I(r, "spans"), apis=I(r, "apis"), matches_platform_user_column=m, source="agent 01 anchors", notes=[r["evidence"]])))
+                      evidence=dict(distinct_users=I(r, "distinct"), spans=I(r, "spans"), apis=I(r, "apis"), matches_platform_user_column=m, source="the profile stage anchors", notes=[r["evidence"]])))
 
-_other = {r["key"]: r for r in _fa if r["location"] == "body" and r["verdict"] != "person"}  # agent 01 measured these login-body names as another id space
+_other = {r["key"]: r for r in _fa if r["location"] == "body" and r["verdict"] != "person"}  # the profile stage measured these login-body names as another id space
 for k in [k for k in by_key if k in _other]:
     users[:] = [u for u in users if u["name"] != f"user-body-{re.sub(r'[^A-Za-z0-9]+','-',k).strip('-')}"]
-    excluded.append(dict(carrier=f"body:{k}", reason="typed at a login call, but agent 01 measured its values as another id space (not user_identifier values): a rule would give the same person a second user id", tests=dict(matches_platform_user_column=float(_other[k]["eq_user_identifier"] or 0))))
+    excluded.append(dict(carrier=f"body:{k}", reason="typed at a login call, but the profile stage measured its values as another id space (not user_identifier values): a rule would give the same person a second user id", tests=dict(matches_platform_user_column=float(_other[k]["eq_user_identifier"] or 0))))
 for u in [u for u in users if not u["scope"]["url_regexes"] and not u.get("any_api")]:  # an empty scope would apply the rule to every API
     users.remove(u); excluded.append(dict(carrier=u["name"], reason="no consumer, partner or other-lane API carries it, so no rule scope"))
 
@@ -342,7 +342,7 @@ def _by_coverage(ranked, cap, what):
     return keep
 sessions = _by_coverage(_req, a.max_sessions, "request-side") + _by_coverage(_resp, a.max_sessions // 2, "response-issued")
 
-# ---- 4. entities (agent 02: broad, from the tenant's threat model = agent 01's Q3 categories on its hunt APIs) ----------------------
+# ---- 4. entities (the attribution stage: broad, from the tenant's threat model = the profile stage's Q3 categories on its hunt APIs) ----------------------
 ents = collections.defaultdict(lambda: dict(spans=0, dv=0, apis=collections.Counter(), srcs=set(), shapes=collections.Counter()))
 for r in rd("params"):
     fam = re.sub(r"[^a-z0-9]", "", r["pkey"].lower())
@@ -358,7 +358,7 @@ for fam, e in ents.items():
     kind = "Email Address" if shape == "email" else "Phone Number" if (PHONE.search(fam) and shape in ("digits", "digits13+", "short", "other")) else "Credit Card" if (CARD.search(fam) and shape in ("digits", "digits13+")) else "IP Address" if shape == "ip" else "String"
     hunt = [n for n in e["apis"] if verdict.get(n) == "hunt"]
     cats = collections.Counter(q3cat.get(n, "") for n in hunt if q3cat.get(n))
-    if have_lanes and not hunt: continue         # entity only on APIs that agent 01 did not call business-value worthy: out of scope for the threat model
+    if have_lanes and not hunt: continue         # entity only on APIs that the profile stage did not call business-value worthy: out of scope for the threat model
     ent_apis[fam] = set(hunt or e["apis"])
     entities.append(dict(name=fam, entity_kind=kind, tab="recommended", active=False, definitions=[dict(location=loc("param" if s == "param" else "body", k), conditions=[]) for s, k in sorted(e["srcs"])][:8],
                          value_transformations=[], scope=dict(environments=[a.env], services="all", url_regexes=scope_regexes(collections.Counter({n: e["apis"][n] for n in (hunt or e["apis"])}))),

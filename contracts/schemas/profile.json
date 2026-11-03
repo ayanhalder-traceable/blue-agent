@@ -1,5 +1,5 @@
 {
-  "agent": "01-data-cartographer",
+  "agent": "profile",
   "reads": [],
   "required_entries": [
     {

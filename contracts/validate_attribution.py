@@ -2,7 +2,7 @@
 """Check a packaged agent-02 deliverable (blue-agent/attribution@4). Standard library only.
 Usage: validate_attribution.py <Tenant>-<env>-attribution.json [...]"""
 import json, os, sys
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "agents", "02-key-evaluator", "tools"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stages", "attribution", "tools"))
 import platform_shapes
 
 HERE = os.path.dirname(os.path.abspath(__file__))

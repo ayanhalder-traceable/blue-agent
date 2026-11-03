@@ -1,4 +1,4 @@
-"""Convert agent 02's definitions into the exact input objects the platform's GraphQL takes, so a delivered definition can be submitted as-is.
+"""Convert the attribution stage's definitions into the exact input objects the platform's GraphQL takes, so a delivered definition can be submitted as-is.
 Shapes come from introspecting the platform schema (read-only): createUserAttributionRuleV2, createSessionIdentificationRuleV2, CreateEntityDerivationConfig.
 Every converted item is created DISABLED: a person enables it after review. Nothing here talks to the platform."""
 import re
@@ -24,7 +24,7 @@ def _key_match(loc):
     return {"matchOperator": "MATCHES_REGEX", "stringValue": loc["key_pattern"]} if loc.get("key_pattern") else {"matchOperator": "EQUALS", "stringValue": loc["key"]}
 
 def _projections(trs, notes):
-    """agent 02 value_transformations -> valueProjections. A JWT decode followed by a JSON path on a top-level claim collapses to one claim projection"""
+    """the attribution stage value_transformations -> valueProjections. A JWT decode followed by a JSON path on a top-level claim collapses to one claim projection"""
     out, i = [], 0
     while i < len(trs):
         t = trs[i]; ty = t["type"]

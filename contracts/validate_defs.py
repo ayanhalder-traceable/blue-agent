@@ -89,7 +89,7 @@ if d:
         if x.get("source_agent") not in sp["source_agents"]: err("entity", n, "bad source_agent")
         if x.get("source_agent") == "06":
             for k in sp["gap_fill_required"]:
-                if k not in x: err("entity", n, f"agent 06 definition missing {k}: it exists only to fill a named gap")
+                if k not in x: err("entity", n, f"the entity gap-fill stage (not in this repo) definition missing {k}: it exists only to fill a named gap")
         for df in x.get("definitions", []): chain_ok("entity", n, df)
         scope_ok("entity", n, x.get("scope", {}))
 

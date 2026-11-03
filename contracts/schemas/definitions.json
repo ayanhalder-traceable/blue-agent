@@ -123,7 +123,7 @@
    "pair",
    "combine"
   ],
-  "definition_notes": "location.key is a dotted JSON path; [*] marks every list element; pair=[label,valueKey] reads a {label,value} object list; combine={op:concat,separator,of:children-of-parent} builds one value from several child keys. A definition's own url_regexes override the entity scope for that location; methods lists the HTTP methods seen. confidence is {score, band, components, gates}: band extract >= .85, review .65-.85, reject below (rejected items are never shipped, they are logged in not_entity). baseline records typical devices per value (median, p95) so a rise on a shared value can be detected. Gap-fill entities from agent 06 may leave the naming fields out.",
+  "definition_notes": "location.key is a dotted JSON path; [*] marks every list element; pair=[label,valueKey] reads a {label,value} object list; combine={op:concat,separator,of:children-of-parent} builds one value from several child keys. A definition's own url_regexes override the entity scope for that location; methods lists the HTTP methods seen. confidence is {score, band, components, gates}: band extract >= .85, review .65-.85, reject below (rejected items are never shipped, they are logged in not_entity). baseline records typical devices per value (median, p95) so a rise on a shared value can be detected. Gap-fill entities from the entity gap-fill stage (not in this repo) may leave the naming fields out.",
   "gap_fill_relaxed": [
    "description",
    "entity_type",

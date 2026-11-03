@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Key graph: the chain of correlation keys that stitches the longest user journeys. Run after discover.py and journey.py, before derive_defs.py.
-A journey starts from an ANCHOR (a value that names a person: agent 01's profile.json, table `anchors`, verdict person) and grows through every request that
+A journey starts from an ANCHOR (a value that names a person: the profile stage's profile.json, table `anchors`, verdict person) and grows through every request that
 shares a key value with it: a cookie, a header, then whatever other key those requests carry, and so on. Keys are nodes' types, values are nodes, a request links
 every value it carries. A connected group of requests with exactly one person in it is one person's journey; a group with two or more people means a key merged them.
 Chain selection is greedy: at each step add the key that attributes the most new requests to exactly one person, as long as the share of anchored requests sitting in
 merged groups stays within --collision-budget. Keys that never pay off, or merge people, are listed with the reason.
 Candidates: journey.csv carriers that link something (a value seen on more than one request), plus the reusable carriers and issued cookies in profile.json `bridge_apis`.
-APIs in agent 01's probe and health lanes are left out. Values are hashed inside Trino; no raw value leaves the cluster.
+APIs in the profile stage's probe and health lanes are left out. Values are hashed inside Trino; no raw value leaves the cluster.
 Writes <dir>/journey-graph.json and <dir>/chain.csv.
-The window comes from --start/--minutes, else from the profile's fact.journey-window (the window agent 01 measured anchors on). There is no built-in window.
+The window comes from --start/--minutes, else from the profile's fact.journey-window (the window the profile stage measured anchors on). There is no built-in window.
 Usage: keygraph.py --customer <uuid> --env <env> --profile <profile.json> --dir <discover out dir> [--start 'YYYY-MM-DD HH:MM' --minutes <n>] [--collision-budget 0.02] [--max-candidates 60]"""
 import argparse, csv, json, os, re, subprocess, sys, collections, statistics
 
@@ -23,7 +23,7 @@ def T(name):
     t = P.get("tables", {}).get(name)
     return [r if isinstance(r, dict) else dict(zip(t["columns"], r)) for r in t["rows"]] if t else []
 if not a.start:
-    w = ENT.get("fact.journey-window", {}).get("value") or sys.exit("no --start/--minutes and no fact.journey-window in the profile: run agent 01 tools/anchors.py, or pass the window")
+    w = ENT.get("fact.journey-window", {}).get("value") or sys.exit("no --start/--minutes and no fact.journey-window in the profile: run the profile stage tools/anchors.py, or pass the window")
     a.start, a.minutes = w["start"], int(w["minutes"])
 if not a.minutes: sys.exit("--minutes is required with --start")
 assert re.fullmatch(r"[0-9a-f-]{36}", a.customer) and re.fullmatch(r"[A-Za-z0-9._-]+", a.env) and re.fullmatch(r"\d{4}-\d\d-\d\d \d\d:\d\d", a.start)
@@ -50,7 +50,7 @@ def anchor_sql(r):   # every anchor is lowered and trimmed, so one person's id h
              f"{q('$[' + json.dumps(r['claim']) + ']')}))")
     else: e = field_sql(r)
     return f"nullif(lower(trim({e})), '')"
-def field_sql(r):   # body, response_body, query field: only on the APIs agent 01 saw it on (the anchor's claim column)
+def field_sql(r):   # body, response_body, query field: only on the APIs the profile stage saw it on (the anchor's claim column)
     col = {"body": "request_body", "response_body": "response_body"}.get(r["location"])
     v = f"try(json_extract_scalar({col}, {q(_jpath(r['key']))}))" if col else f"element_at(query_params, {q(r['key'])})"
     apis = [x for x in (r.get("claim") or "").split(";") if x]

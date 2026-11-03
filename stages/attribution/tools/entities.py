@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Contextual entity attribution (agent 02). No tenant, API, header or key names in here.
+"""Contextual entity attribution (the attribution stage). No tenant, API, header or key names in here.
 An entity is an IDENTIFIER of a person or instrument that a hunter can search by or an investigator can pivot on:
 email, phone, card number, first/last/full name, street address (+ billing/shipping), zip/postal code, date of birth, national id, bank account, username.
 Opaque object ids (page, cart, form, nonce, token) are NOT entities; they are never emitted.
@@ -28,7 +28,7 @@ import argparse, collections, csv, hashlib, io, json, os, re, statistics, subpro
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--customer", required=True); ap.add_argument("--env", required=True); ap.add_argument("--starts", nargs="+", required=True)
-ap.add_argument("--minutes", type=int, default=3); ap.add_argument("--per-api", type=int, default=30); ap.add_argument("--apis", help="agent 01 apis.json (lane, payload_source); else lanes are measured here")
+ap.add_argument("--minutes", type=int, default=3); ap.add_argument("--per-api", type=int, default=30); ap.add_argument("--apis", help="the profile stage apis.json (lane, payload_source); else lanes are measured here")
 ap.add_argument("--out", required=True); ap.add_argument("--min-distinct", type=int, default=5); ap.add_argument("--max-regex", type=int, default=12); ap.add_argument("--follow", type=int, default=150, help="sessions followed per group")
 a = ap.parse_args()
 assert re.fullmatch(r"[0-9a-f-]{36}", a.customer) and re.fullmatch(r"[A-Za-z0-9._-]+", a.env) and all(re.fullmatch(r"\d{4}-\d\d-\d\d \d\d:\d\d", s) for s in a.starts)

@@ -1,8 +1,8 @@
-# Agent 01 — Data Cartographer
+# Profile stage (data cartographer)
 
-**Purpose:** Understand the business and the data before anyone hunts. Answer seven questions about the tenant, with numbers, and keep the answers in one **living tenant profile**. Agent 02 and every later agent read that profile instead of guessing.
+**Purpose:** Understand the business and the data before anyone hunts. Answer seven questions about the tenant, with numbers, and keep the answers in one **living tenant profile**. The attribution stage and every later agent read that profile instead of guessing.
 
-**Cadence:** this agent runs **weekly** on the **last 7 complete days** of traffic (the window ends yesterday) and **updates** the tenant profile. It does not start from scratch and it does not overwrite blindly (see "The living profile"). Agents that run more often read the current profile and never run the cartographer themselves.
+**Cadence:** this stage runs **weekly** on the **last 7 complete days** of traffic (the window ends yesterday) and **updates** the tenant profile. It does not start from scratch and it does not overwrite blindly (see "The living profile"). Agents that run more often read the current profile and never run the cartographer themselves.
 
 ## Inputs
 
@@ -39,7 +39,7 @@ profiles/<tenant>-<environment>/
 
 Two files per run, as before:
 
-1. `handoff.json`: the short contract the next agent must read in full. Shape and rules: `contracts/README.md`. Required entries and tables: `contracts/schemas/01-data-cartographer.json`. The merged result is `profile.json`.
+1. `handoff.json`: the short contract the next agent must read in full. Shape and rules: `contracts/README.md`. Required entries and tables: `contracts/schemas/profile.json`. The merged result is `profile.json`.
 2. `report.md`: the evidence for this run. Every contract entry points to a section here. Do not open another tenant's report while you work. Every value comes from this tenant's spans.
 
 Write the report first, then the contract. Before you finish, run:
@@ -49,7 +49,7 @@ python3 contracts/validate.py <handoff.json>
 python3 contracts/validate.py <profile.json>
 ```
 
-Fix every failure. Do not hand off a contract that fails. Agent 00 will not start agent 02 until it passes.
+Fix every failure. Do not hand off a contract that fails. The orchestrator will not start the attribution stage until it passes.
 
 Nothing is left out for being "too detailed". No high-level summaries in place of numbers. Every claim has the count behind it. Use plain words.
 
@@ -64,7 +64,7 @@ Fixed sections, in this order:
 | 4 | Auth and tokens | Every auth type, how it looks, whether it decodes, machine or user, how to get the user out of each |
 | 5 | Masked and unmasked PII | Field-by-field, API-by-API |
 | 6 | Traffic distribution | Who sends the traffic, how concentrated, whether it is worth hunting |
-| 7 | Hand-off to agent 02 | Candidate keys with measured cardinality, tests agent 02 must run, the filters every downstream query must use, internal-IP list |
+| 7 | Hand-off to the attribution stage | Candidate keys with measured cardinality, tests the attribution stage must run, the filters every downstream query must use, internal-IP list |
 | 8 | Open items | What this run could not answer, and why |
 
 ## Window and traffic shape (do this first)
@@ -189,7 +189,7 @@ Lanes and verdicts come from `tools/`, not by hand. Nothing in `tools/` names a 
 python3 tools/assign_lanes.py --dir <out_dir>/merged --auth-usable yes|no --out <out_dir>/apis.json [--q3 <out_dir>/q3.csv]
 ```
 
-- `--auth-usable`: `yes` only when goal 4 found an auth value that is a stable client or user key. Decide it from the auth analysis, not by default: `no` makes every API without a stable client key look machine-driven, and agent 02 then sees real session carriers (a session header, a signed cookie) as machine-lane. If goal 4 found any per-user credential in a header or cookie, even an opaque one, say `yes` and name the carrier in the report. A per-user token carried by a gateway or app server on behalf of end users is the other trap: write it in the report under auth, so the lane of the APIs that carry it is read as "server-side caller for end users", not as a machine.
+- `--auth-usable`: `yes` only when goal 4 found an auth value that is a stable client or user key. Decide it from the auth analysis, not by default: `no` makes every API without a stable client key look machine-driven, and the attribution stage then sees real session carriers (a session header, a signed cookie) as machine-lane. If goal 4 found any per-user credential in a header or cookie, even an opaque one, say `yes` and name the carrier in the report. A per-user token carried by a gateway or app server on behalf of end users is the other trap: write it in the report under auth, so the lane of the APIs that carry it is read as "server-side caller for end users", not as a machine.
 - Q3 rules: `tools/q3_default.csv` holds business-neutral capability rules (credentials, money, account data, messaging, admin, file upload, webhooks, schema discovery, static and telemetry). It always applies. Your optional `--q3` file holds this tenant's rules and is checked first. Write it after the business read (goal 1), only for API families the defaults miss or get wrong.
 - An API that matches no rule gets Q3 `unknown` and `baseline-only`. The tool lists those APIs, heaviest first, in `summary.q3_unmatched`. Read every one above 0.1% of spans and either write a rule or say in the report why it stays unknown.
 - Thresholds are flags with the rubric values as defaults (`--tiny-spans 100`, `--consumer-ips 1000`, `--min-callers 5`). Change one only with a reason in the report.
@@ -218,12 +218,12 @@ Profiling tables are a hint, not a source.
 9. **Masking.** Body samples per API, regex shape counts (10-digit, E.164, 64-hex, `***`, email, lat/long). Name every field.
 10. **Distribution.** IP concentration, org and connection-type mix, UA families, countries, daily and hourly shape.
 11. **Quirks.** Is `ip_address` the real client or an edge? Check `x-forwarded-for`, `cf-connecting-ip`, `x-real-ip`, `true-client-ip`. What does `session_id` mean per API (distinct sessions vs spans)? IPv6 present (use /64)? Do enrichment flags (`ip_is_vpn/proxy/bot`, org, connection type) populate?
-11b. **Anchors and bridges** (feeds agent 02's journey stitching). Run on one window you name (no default window):
+11b. **Anchors and bridges** (feeds the attribution stage's journey stitching). Run on one window you name (no default window):
     `python3 tools/anchors.py --customer <uuid> --env <env> --start 'YYYY-MM-DD HH:MM' --minutes <n> --profile profiles/<tenant>-<env>/profile.json [--apis <apis.json>]`
     It adds three things to the profile, from aggregates and hashes only:
     - `anchors` table: every value that names a person. Sources are the `user_identifier` column, JWT claims decoded from bearer-shaped headers, and **every request-body, response-body and query-parameter field on every API** whose name can name a person (top level and one level nested, e.g. `data.userId`). Do not limit the field scan to login calls: server-side, back-office and pre-login calls often name the user only in a body. Path parameters are not scanned, because the platform's attribution rules cannot read them. A value is `person` when it equals `user_identifier` on ≥ 90% of the spans that carry both. Where the span has no `user_identifier`, it is `person` when ≥ 90% of its distinct values appear as `user_identifier` values in the window (the same id space). A person-named field below that may hold an id from another id space (an internal customer number). It stays `person-candidate`, and the evidence says so. `person-candidate` means person-shaped but not proven; `not-person` covers the rest.
     - `bridge_apis` table: per API, its role (`bridge` carries reusable token-shaped cookies or headers; `issuer` sets cookies before any anchor exists; `anchored`), plus its carriers (reusable cookies, headers and URL query parameters) and issued cookie names.
-    - `fact.journey-window`: the window measured. Agent 02 reuses it for its key graph.
+    - `fact.journey-window`: the window measured. The attribution stage reuses it for its key graph.
 12. **Verify.** Pull 5 raw spans of a known API and confirm the report matches them.
 13. **Write the file.** Sections 0–8. Fill section 0 last.
 
@@ -264,4 +264,4 @@ Profiling tables are a hint, not a source.
 
 ## Done when
 
-`profile.json` passes `validate.py`, and agent 02 can read it (and `profile.md` to check a claim) and know: whether this week is a valid baseline, what the business is, what to drop, which fields are missing, what each auth value is and whether it can be decoded, which PII is usable, and where real users or partners sit in the traffic. Nothing in it is a guess.
+`profile.json` passes `validate.py`, and the attribution stage can read it (and `profile.md` to check a claim) and know: whether this week is a valid baseline, what the business is, what to drop, which fields are missing, what each auth value is and whether it can be decoded, which PII is usable, and where real users or partners sit in the traffic. Nothing in it is a guess.

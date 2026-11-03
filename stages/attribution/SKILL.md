@@ -1,10 +1,10 @@
-# Agent 02 — Key Evaluator
+# Attribution stage (key evaluator)
 
 **Purpose:** Determine — empirically, not by name — which keys actually stitch an actor's activity into journeys. Output is a ranked key hierarchy, not an assumption.
 
 ## Inputs
 
-- `cartographer-report.md` from the Data Cartographer: read section 3 (data gaps), 4 (auth, `user_identifier` shape, token chain), 6 (traffic distribution) and 7 (candidate keys, filters). Its key census is the starting list; its junk list (section 2) is excluded before scoring
+- `cartographer-report.md` from the profile stage: read section 3 (data gaps), 4 (auth, `user_identifier` shape, token chain), 6 (traffic distribution) and 7 (candidate keys, filters). Its key census is the starting list; its junk list (section 2) is excluded before scoring
 - Any known-good reference journeys (e.g., a session chain already trusted on one surface)
 
 ## Outputs
@@ -15,7 +15,7 @@
 | `key-scorecard.csv` | Per key: coverage, cardinality, fan-out stats, coherence score, verdict |
 | `user-attribution.json` | Platform-shaped **user attribution** definitions (scope, userId/userRole/userScope/authType, conditions, transformations) plus an `excluded` list of machine carriers with the test that excluded each |
 | `session-identification.json` | Platform-shaped **session identification** definitions (Request or Response identifier, token location, transformations, `aliases`, `multiple_per_user`) plus `not_session` |
-| `entity-definitions.json` | **Broad entity** definitions driven by the tenant's threat model (see Entity attribution). Agent 06 fills gaps; it does not repeat these |
+| `entity-definitions.json` | **Broad entity** definitions driven by the tenant's threat model (see Entity attribution). The entity gap-fill stage (not in this repo) fills gaps; it does not repeat these |
 | `<Tenant>-<env>-attribution.json` | **The deliverable**: the three definition sets above plus their live verification, in one document (`tools/package.py`) |
 | `carriers.csv` | Scorecard of every credential, session and identity carrier found: shape, cardinality class, consumer-lane share, caller match, verdict |
 
@@ -87,15 +87,15 @@ The key hierarchy says which keys stitch journeys. The definitions turn that int
 ```bash
 python3 tools/discover.py --customer <uuid> --env <env> --start 'YYYY-MM-DD HH:MM' --minutes 5 --out <dir>
 python3 tools/journey.py --customer <uuid> --env <env> --start 'YYYY-MM-DD HH:MM' --minutes <n> --dir <dir>   # key exploration: APIs linked per key value
-python3 tools/keygraph.py --customer <uuid> --env <env> --profile <agent 01 profile.json> --dir <dir> [--collision-budget 0.02]   # chain of keys that stitches the longest person-anchored journeys
-python3 tools/derive_defs.py --dir <dir> --env <env> --profile <agent 01 profile.json> [--apis <apis.json> fallback] --out <out>
-python3 tools/entities.py --customer <uuid> --env <env> --starts '<YYYY-MM-DD HH:MM>' '<...>' '<...>' [--apis <agent 01 apis.json>] --out <out>   # entity-definitions.json + entity-groups.csv (replaces derive_defs' entity section)
+python3 tools/keygraph.py --customer <uuid> --env <env> --profile <the profile stage profile.json> --dir <dir> [--collision-budget 0.02]   # chain of keys that stitches the longest person-anchored journeys
+python3 tools/derive_defs.py --dir <dir> --env <env> --profile <the profile stage profile.json> [--apis <apis.json> fallback] --out <out>
+python3 tools/entities.py --customer <uuid> --env <env> --starts '<YYYY-MM-DD HH:MM>' '<...>' '<...>' [--apis <the profile stage apis.json>] --out <out>   # entity-definitions.json + entity-groups.csv (replaces derive_defs' entity section)
 python3 tools/verify_defs.py --customer <uuid> --env <env> --start 'YYYY-MM-DD HH:MM' --defs <out> --out <out>
 python3 tools/api_ids.py --customer <uuid> --env <env> --start 'YYYY-MM-DD HH:MM' --minutes 60 --out <out>   # api_ids.csv
 python3 tools/package.py --defs <out> --customer <uuid> --api-ids <out>/api_ids.csv --out '<Customer Evaluations>/<Tenant>-<env>-attribution.json'
 ```
 
-**Key graph (`keygraph.py`), built on agent 01.** It reads the profile's `anchors` (person values), `bridge_apis` (carriers and issued cookies) and `fact.journey-window` (the window; there is no default), plus `journey.csv`.
+**Key graph (`keygraph.py`), built on the profile stage.** It reads the profile's `anchors` (person values), `bridge_apis` (carriers and issued cookies) and `fact.journey-window` (the window; there is no default), plus `journey.csv`.
 - Each request links every value it carries; person anchors and key values become nodes in a union-find.
 - It adds keys greedily: at each step it takes the key that attributes the most new requests to exactly one person. Collision rate is the share of person-anchored requests that land in groups holding 2+ people; the key is added only while that stays within `--collision-budget`.
 - A key need not be everywhere. A key that reaches APIs the chain does not is kept.
@@ -103,7 +103,7 @@ python3 tools/package.py --defs <out> --customer <uuid> --api-ids <out>/api_ids.
 - Rejected keys are listed with a reason: not present, no gain, only merges people, or over budget.
 - Output is `journey-graph.json` (the chain with per-step attributed share, journey APIs p50/p95, the rejected keys and the unreached APIs with what they carry) and `chain.csv`.
 - `derive_defs.py` ranks request-side session carriers by chain step first. It moves carriers whose values cross people above the budget into `not_session`, with the rate as the reason. Anti-forgery tokens are judged like any key: they stay if they stitch without crossing people.
-- **Check every body for the user, not only login bodies.** Request bodies, response bodies (a profile or account read returns the user's id) and query parameters are user-attribution sources on any API. Agent 01's `anchors` table lists each field with its APIs and how well it matches `user_identifier`.
+- **Check every body for the user, not only login bodies.** Request bodies, response bodies (a profile or account read returns the user's id) and query parameters are user-attribution sources on any API. The profile stage's `anchors` table lists each field with its APIs and how well it matches `user_identifier`.
   - `derive_defs.py` turns each `person` field (its values are `user_identifier` values) into a `measured` user rule scoped to those APIs.
   - A `person-candidate` field names the person in another id space (an internal user id, an email where the platform user is a username). It is not a user rule: it would give the same person a second user id and split the journey. It goes to `excluded` with that reason.
   - A user rule whose scope comes out empty is never written: an empty scope applies to every API.
@@ -138,10 +138,10 @@ python3 tools/package.py --defs <out> --customer <uuid> --api-ids <out>/api_ids.
 |---|---|---|
 | T1 cardinality class | distinct values against spans | per-request, constant, few values, or a small population hammering many spans |
 | T2 fan-out | client IPs per value | more than 20 IPs per value (shared credential) |
-| T3 lane | share of the carrier's spans on agent 01 consumer-lane APIs | below 0.2 (end user at 0.5 or more; mixed between) |
+| T3 lane | share of the carrier's spans on the profile stage consumer-lane APIs | below 0.2 (end user at 0.5 or more; mixed between) |
 | T4 caller vs target | share of spans where the value equals `user_identifier` | n/a: informs whether the column is caller or target |
 
-Registered and protocol claims (`iss, aud, exp, nbf, iat, jti, nonce, scp ...`) are never a person key. Without agent 01's lanes, T3 is unknown and the confidence drops to `inferred`.
+Registered and protocol claims (`iss, aud, exp, nbf, iat, jti, nonce, scp ...`) are never a person key. Without the profile stage's lanes, T3 is unknown and the confidence drops to `inferred`.
 
 **T3 is a tiebreak, not a veto.** A per-user-sized carrier (30 or more distinct values in an API, at most 2 IPs per value) that sits only on machine-lane APIs is a gateway or app server calling for end users. It is kept as `mixed` / `inferred` with a note, never dropped on the lane alone. Dropping it on the lane lost the real session key on a tenant whose lanes were computed with `--auth-usable no`.
 
@@ -160,7 +160,7 @@ Registered and protocol claims (`iss, aud, exp, nbf, iat, jti, nonce, scp ...`) 
 
 **Session identification.** A session value is reused across requests (at least 2 spans per value), is credential-shaped (not free text or a number), is not shared across IPs, and is carried by end-user APIs. Headers that carry the same value (identical spans, distinct count and IPs) are one definition with `aliases`. Visitor and analytics ids, first- or third-party (`_ga`-style, click and campaign ids), are kept when they pass the same tests, marked `session_grade: "visitor"` and ranked after first-party session carriers: they outlive one login, so they stitch a visitor across visits. `multiple_per_user` is measured as distinct sessions per distinct user. Response-issued tokens are `Response` identifiers and are the lowest confidence until a follow-up request presents them.
 
-**Entity attribution, agent 02: contextual identifiers.** An entity is an identifier a hunt or an investigation can pivot on: email, phone, card number, first/last/full name, street address, zip, date of birth, national id, bank account, username, and digests of these (`phone-hash`, `email-hash`, only when the key names what was hashed). Opaque ids, tokens, nonces, counters and free text are never entities. Run `tools/entities.py` over several spaced windows (sampling per API, so one chatty API cannot outvote the rest).
+**Entity attribution, the attribution stage: contextual identifiers.** An entity is an identifier a hunt or an investigation can pivot on: email, phone, card number, first/last/full name, street address, zip, date of birth, national id, bank account, username, and digests of these (`phone-hash`, `email-hash`, only when the key names what was hashed). Opaque ids, tokens, nonces, counters and free text are never entities. Run `tools/entities.py` over several spaced windows (sampling per API, so one chatty API cannot outvote the rest).
 
 - **Name = `<what>.<whose>`**, both parts always, lowercase-hyphen: `email.account-holder`, `email.guest-shopper`, `email.third-party-login`, `zip.billing-party`, `phone.shipping-recipient`. *What* is the identifier type (email, phone, first-name, last-name, full-name, street-address, address, zip, date-of-birth, card-number, bank-account, national-id, username, email-hash, phone-hash). *Whose* answers "who is this person to the tenant?": account-holder, guest-shopper, shopper (guest vs account unknowable), third-party-login, login-claimant (typed at a login attempt, not yet proven), new-registrant, billing-party, shipping-recipient, card-holder, site-member, contact, recipient, internal-staff, service-account. Names are unique per tenant (same name = one entity with several locations) and mean the same thing in every tenant. A combined value is named for the whole (`address.billing-party`). Where the data came from (feed, API, key) is never in the name: it is the `population` field. Every entity carries a one-line plain-English `description` and a `whose_evidence` that says how *whose* was decided.
 - **Whose** comes from, in order: the nearest JSON ancestor (billing, shipping, recipient, card-holder, contact); the API's journey class from its path tokens (login, signup, checkout, contact, profile, third-party-login, feed); and a session follow (same `session_id`, else caller ip, ±30 min: was the user column populated before or after, did a login succeed). A checkout with sign-in before or after is `account-holder`; never signed in is `guest-shopper`. On a login journey only email, phone, username and their hashes are identifiers; anything else there (address parts, names) is a form artifact and is rejected.
@@ -174,7 +174,7 @@ Registered and protocol claims (`iss, aud, exp, nbf, iat, jti, nonce, scp ...`) 
 - **Output shape.** The deliverable is payloads only (`{mutation, variables}`). The review file's `assessment` has exactly: `entity_name, description, environment, services, apis, methods, confidence, evidence, definitions, ready_to_submit, notes`; entities add `population` (end-user or feed), `use` (hunt or investigate-only) and `sensitive`. `confidence` is one number from 0 to 1. `evidence` keeps only what helps debug a decision: `requests_checked, requests_matched, distinct_values, confidence_breakdown`, and for entities `typical_devices_per_value, share_of_values_on_multiple_devices, whose_basis`.
 - Values are hashed in memory and never written; output is counts and key paths.
 - Limits to know: the combined-key cardinality is a placeholder until verified on live data; `services` is always "all" because the platform gives no per-service signal.
-Agent 06 does the other half: it defines an entity only where agent 02 has none and a policy or capability needs it.
+The entity gap-fill stage (not in this repo) does the other half: it defines an entity only where the attribution stage has none and a policy or capability needs it.
 
 **Scope regexes.** Each definition's `url_regexes` is built from the APIs that carry it, on consumer, partner or other lanes. Paths are folded into families (`^/prefix(/.*)?$`) from the deepest shared prefix up until the list fits `--max-regex` (20). A family prefix always holds a static segment, so a catch-all like `^/[^/]+(/.*)?$` is never produced.
 
