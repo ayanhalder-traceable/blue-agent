@@ -1,0 +1,24 @@
+name: checks
+on: [push, pull_request]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Compile every Python file
+        run: python3 -m compileall -q agents orchestrator contracts shared
+      - name: Plan is valid and every skill file exists
+        run: |
+          python3 - <<'PY'
+          import json, os
+          p = json.load(open("orchestrator/plan.json"))
+          for n, d in p["nodes"].items():
+              assert os.path.exists(d["skill"]), f"{n}: missing {d['skill']}"
+              for c in d["produces"] + [x["contract"] for x in d["needs"]]:
+                  assert c in p["contracts"], f"{n}: unknown contract {c}"
+          print("plan ok")
+          PY
+      - name: Orchestrator runs
+        run: python3 orchestrator/run.py status --tenant ci --env ci --store /tmp/none.jsonl

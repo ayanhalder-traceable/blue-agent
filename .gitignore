@@ -5,7 +5,7 @@ __pycache__/
 /tmp/
 /Customer Evaluations/
 /README.full-pipeline.md
-/agents/
+/agents/[0-9]*/
 /architecture.md
 /methods/
 /investigation/

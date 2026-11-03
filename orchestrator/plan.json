@@ -1,0 +1,21 @@
+{
+  "_about": "The dependency graph. A node runs when its inputs exist and are fresh, not when the previous node finishes. schedule_days and max_age_days are proposed starting values; change them here, not in code.",
+  "contracts": {
+    "profile":     {"version": "1", "validate": ["python3", "contracts/validate.py", "{path}"]},
+    "attribution": {"version": "4", "validate": ["python3", "contracts/validate_attribution.py", "{path}"]}
+  },
+  "nodes": {
+    "entity-attribution.profile": {
+      "skill": "agents/entity-attribution/stages/profile/SKILL.md",
+      "needs": [],
+      "produces": ["profile"],
+      "schedule_days": 7
+    },
+    "entity-attribution.attribution": {
+      "skill": "agents/entity-attribution/stages/attribution/SKILL.md",
+      "needs": [{"contract": "profile", "max_age_days": 14}],
+      "produces": ["attribution"],
+      "schedule_days": 1
+    }
+  }
+}

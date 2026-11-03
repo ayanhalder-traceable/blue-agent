@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Anchors and bridge APIs: what in this tenant's traffic names a PERSON, and where a person-naming value sits on the same request as a session carrier.
-The attribution stage builds user journeys by chaining session keys from these anchors (stages/attribution/tools/keygraph.py), so this is measured here, once, and handed over in profile.json.
+The attribution stage builds user journeys by chaining session keys from these anchors (agents/entity-attribution/stages/attribution/tools/keygraph.py), so this is measured here, once, and handed over in profile.json.
   anchors      every value that names a person: the user_identifier column, JWT claims in a bearer header, person-named fields in request bodies, response bodies and query parameters on every API.
                Measured per value: spans, distinct values, APIs, how often it equals user_identifier. verdict: person | person-candidate | not-person.
   bridge_apis  per API: spans, anchored spans, and the reusable cookies and headers on those anchored spans with the share of anchored spans each is on

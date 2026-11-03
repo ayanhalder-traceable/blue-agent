@@ -145,6 +145,6 @@ python3 contracts/validate_defs.py <dir> [--verify verify.csv]
 ```
 
 - Every definition carries `confidence` (a number from 0 to 1) and `evidence`. Every excluded machine carrier names the test that excluded it.
-- `--verify` takes the `verify.csv` that `stages/attribution/tools/verify_defs.py` writes: a definition that extracts nothing on the window fails.
+- `--verify` takes the `verify.csv` that `agents/entity-attribution/stages/attribution/tools/verify_defs.py` writes: a definition that extracts nothing on the window fails.
 - Entities carry `source_agent`: `"02"` for the broad, threat-model-driven set, `"06"` for gap-fill only. An the entity gap-fill stage (not in this repo) definition must name the `capability` and `reason` it fills.
 - The shapes are inferred from the platform's screens, not confirmed against an export.
