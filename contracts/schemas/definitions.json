@@ -1,0 +1,303 @@
+{
+ "schema": "blue-agent/definitions@1",
+ "note": "Shapes inferred from the platform's Edit User Attribution, Define Scope, Session Identification and Entities screens. Not confirmed against a platform export; transformation types marked platform_support=assumed are unconfirmed.",
+ "location_types": [
+  "Request Header",
+  "Request Cookie",
+  "Request Param",
+  "Path Param",
+  "Request Body",
+  "Response Cookie",
+  "Response Body"
+ ],
+ "operators": [
+  "Matches",
+  "equals"
+ ],
+ "transformation_types": [
+  "JSON Path",
+  "Regex Capture Group",
+  "JWT Payload Decode",
+  "Base64 Decode"
+ ],
+ "confidence": [
+  "measured",
+  "inferred",
+  "assumed"
+ ],
+ "entity_kinds": [
+  "Email Address",
+  "String",
+  "Phone Number",
+  "Credit Card",
+  "IP Address"
+ ],
+ "user-attribution": {
+  "required": [
+   "name",
+   "description",
+   "scope",
+   "attributes",
+   "confidence",
+   "evidence"
+  ],
+  "required_attributes": [
+   "userId"
+  ],
+  "optional_attributes": [
+   "userRole",
+   "userScope",
+   "authType"
+  ],
+  "top_level_lists": [
+   "definitions",
+   "excluded"
+  ],
+  "excluded_required": [
+   "carrier",
+   "reason"
+  ]
+ },
+ "session-identification": {
+  "required": [
+   "name",
+   "description",
+   "scope",
+   "identifiers",
+   "confidence",
+   "evidence"
+  ],
+  "identifier_required": [
+   "type",
+   "token",
+   "obfuscated"
+  ],
+  "identifier_types": [
+   "Request",
+   "Response"
+  ],
+  "top_level_lists": [
+   "definitions",
+   "not_session"
+  ]
+ },
+ "entity": {
+  "required": [
+   "name",
+   "description",
+   "entity_kind",
+   "entity_type",
+   "whose",
+   "population",
+   "hunt_use",
+   "definitions",
+   "scope",
+   "source_agent",
+   "confidence",
+   "evidence",
+   "active"
+  ],
+  "source_agents": [
+   "02",
+   "06"
+  ],
+  "top_level_lists": [
+   "definitions"
+  ],
+  "gap_fill_required": [
+   "capability",
+   "reason"
+  ],
+  "optional": [
+   "role",
+   "sensitive",
+   "whose_evidence",
+   "baseline",
+   "tab",
+   "value_transformations",
+   "verified"
+  ],
+  "name_pattern": "<what>.<whose>: both parts always, lowercase-hyphen; <what> is entity_type, <whose> is one of entity_whose; where the data came from is NOT in the name (that is population)",
+  "definition_optional": [
+   "url_regexes",
+   "pair",
+   "combine"
+  ],
+  "definition_notes": "location.key is a dotted JSON path; [*] marks every list element; pair=[label,valueKey] reads a {label,value} object list; combine={op:concat,separator,of:children-of-parent} builds one value from several child keys. A definition's own url_regexes override the entity scope for that location; methods lists the HTTP methods seen. confidence is {score, band, components, gates}: band extract >= .85, review .65-.85, reject below (rejected items are never shipped, they are logged in not_entity). baseline records typical devices per value (median, p95) so a rise on a shared value can be detected. Gap-fill entities from agent 06 may leave the naming fields out.",
+  "gap_fill_relaxed": [
+   "description",
+   "entity_type",
+   "whose",
+   "population",
+   "hunt_use"
+  ]
+ },
+ "scope_required": [
+  "environments",
+  "services",
+  "url_regexes"
+ ],
+ "entity_types": [
+  "email",
+  "phone",
+  "first-name",
+  "last-name",
+  "full-name",
+  "street-address",
+  "address",
+  "zip",
+  "date-of-birth",
+  "card-number",
+  "bank-account",
+  "national-id",
+  "username",
+  "email-hash",
+  "phone-hash"
+ ],
+ "entity_populations": [
+  "end-user",
+  "feed"
+ ],
+ "entity_hunt_use": [
+  "hunt",
+  "investigate-only"
+ ],
+ "entity_whose": [
+  "account-holder",
+  "guest-shopper",
+  "third-party-login",
+  "billing-party",
+  "shipping-recipient",
+  "card-holder",
+  "site-member",
+  "contact",
+  "recipient",
+  "internal-staff",
+  "service-account",
+  "shopper",
+  "login-claimant",
+  "new-registrant"
+ ],
+ "confidence_bands": {
+  "extract": ">= 0.85",
+  "review": "0.65 to 0.85: investigate-only, flagged for review",
+  "reject": "< 0.65 or a hard gate failed: not extracted, logged"
+ },
+ "confidence_weights": {
+  "key": 0.2,
+  "whose": 0.2,
+  "shape": 0.15,
+  "cardinality": 0.15,
+  "scope": 0.1,
+  "agreement": 0.1,
+  "stability": 0.1
+ },
+ "attribution_envelope": {
+  "schema": "blue-agent/attribution@4",
+  "top_level": [
+   "schema",
+   "customer",
+   "environment",
+   "generated",
+   "window",
+   "users",
+   "sessions",
+   "entities"
+  ],
+  "item_required": [
+   "mutation",
+   "variables"
+  ],
+  "entity_extra_required": [
+   "population",
+   "use",
+   "sensitive"
+  ],
+  "confidence": "number from 0 to 1; items shipped are 0.65 or higher; 0.85 or higher may be used to hunt, 0.65 to 0.85 is investigate-only",
+  "evidence_required": [
+   "requests_checked",
+   "requests_matched",
+   "distinct_values",
+   "confidence_breakdown"
+  ],
+  "entity_evidence_extra": [
+   "typical_devices_per_value",
+   "share_of_values_on_multiple_devices",
+   "whose_basis"
+  ],
+  "definitions": {
+   "all-apis": {
+    "scope": "all-apis",
+    "extract": "list"
+   },
+   "listed-apis": {
+    "scope": "listed-apis",
+    "extract": "list"
+   },
+   "per-api": {
+    "scope": "per-api",
+    "per_api": "list of {apis, methods, extract}"
+   }
+  },
+  "not_extracted_row": [
+   "kind",
+   "entity_name",
+   "reason"
+  ],
+  "kinds": [
+   "user",
+   "session",
+   "entity"
+  ],
+  "never_in_output": [
+   "band",
+   "gates",
+   "whose_evidence",
+   "baseline",
+   "verified",
+   "entity_type",
+   "whose",
+   "active",
+   "aliases",
+   "session_grade",
+   "multiple_per_user",
+   "label",
+   "agent",
+   "summary",
+   "caveat"
+  ],
+  "note": "Debug keys kept: evidence counts, confidence_breakdown, whose_basis, baseline-derived device counts, and the reason on every not_extracted row. Anything else stays in the working files.",
+  "assessment_required": [
+   "entity_name",
+   "description",
+   "environment",
+   "services",
+   "apis",
+   "methods",
+   "confidence",
+   "evidence",
+   "definitions",
+   "ready_to_submit",
+   "notes"
+  ],
+  "item_note": "the deliverable holds only the platform payload: mutation + variables, nothing else. Scores, evidence and not_extracted live in the review file beside it (<name>-review.json)",
+  "review_top_level": [
+   "schema",
+   "customer",
+   "environment",
+   "generated",
+   "window",
+   "users",
+   "sessions",
+   "entities",
+   "not_extracted"
+  ],
+  "review_item_required": [
+   "kind",
+   "mutation",
+   "name",
+   "assessment"
+  ],
+  "review_schema": "blue-agent/attribution-review@4"
+ }
+}

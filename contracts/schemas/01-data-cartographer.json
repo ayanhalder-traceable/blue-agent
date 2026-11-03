@@ -1,0 +1,387 @@
+{
+  "agent": "01-data-cartographer",
+  "reads": [],
+  "required_entries": [
+    {
+      "id": "fact.business-summary",
+      "kind": "fact"
+    },
+    {
+      "id": "fact.real-data-start",
+      "kind": "fact"
+    },
+    {
+      "id": "fact.api-count",
+      "kind": "fact",
+      "value_keys": [
+        "named_total",
+        "listed",
+        "tail_apis",
+        "tail_spans",
+        "unnamed_groups"
+      ]
+    },
+    {
+      "id": "decision.customer-and-victim",
+      "kind": "decision"
+    },
+    {
+      "id": "filter.base",
+      "kind": "filter",
+      "value_keys": [
+        "sql"
+      ]
+    },
+    {
+      "id": "filter.window",
+      "kind": "filter",
+      "value_keys": [
+        "sql"
+      ]
+    },
+    {
+      "id": "exclude.unnamed",
+      "kind": "exclude",
+      "value_keys": [
+        "sql",
+        "spans_per_day"
+      ]
+    },
+    {
+      "id": "lane.probes",
+      "kind": "lane"
+    },
+    {
+      "id": "decision.auth-decodable",
+      "kind": "decision"
+    },
+    {
+      "id": "decision.user-identifier",
+      "kind": "decision"
+    },
+    {
+      "id": "decision.machine-or-user",
+      "kind": "decision"
+    },
+    {
+      "id": "decision.token-chain",
+      "kind": "decision"
+    },
+    {
+      "id": "decision.hunt-surfaces",
+      "kind": "decision"
+    },
+    {
+      "id": "decision.name-merge-rules",
+      "kind": "decision"
+    },
+    {
+      "id": "gap.cookies",
+      "kind": "gap"
+    },
+    {
+      "id": "gap.bodies",
+      "kind": "gap"
+    },
+    {
+      "id": "gap.session-id",
+      "kind": "gap"
+    },
+    {
+      "id": "risk.sample-bias",
+      "kind": "risk"
+    },
+    {
+      "id": "fact.traffic-shape",
+      "kind": "fact",
+      "value_keys": [
+        "class",
+        "window_start",
+        "window_end",
+        "days",
+        "cv",
+        "slope_pct_per_day",
+        "last3_over_first3",
+        "weekend_over_weekday",
+        "week_over_week"
+      ]
+    },
+    {
+      "id": "fact.profile-run",
+      "kind": "fact",
+      "value_keys": [
+        "profile_version",
+        "window_start",
+        "window_end",
+        "baseline_valid",
+        "prior_runs"
+      ]
+    }
+  ],
+  "min_entries_by_kind": {
+    "gap": 3,
+    "open_item": 1
+  },
+  "required_tables": {
+    "apis": [
+      "api_name",
+      "function",
+      "business_value",
+      "spans_day",
+      "ips",
+      "clients",
+      "error_share",
+      "lane",
+      "pii",
+      "hunt_verdict",
+      "evidence"
+    ],
+    "unnamed_groups": [
+      "group",
+      "inferred_name",
+      "matches_api",
+      "spans_sample",
+      "business_value",
+      "verdict"
+    ],
+    "clubbed_names": [
+      "api_name",
+      "group",
+      "urls",
+      "spans",
+      "business_value",
+      "use"
+    ],
+    "naming_quirks": [
+      "id",
+      "quirk",
+      "effect",
+      "rule"
+    ],
+    "auth_types": [
+      "scheme",
+      "shape",
+      "decodable",
+      "machine_or_user",
+      "how_to_get_user",
+      "evidence"
+    ],
+    "keys": [
+      "key",
+      "where",
+      "cardinality",
+      "verdict",
+      "tier_hint"
+    ],
+    "pii_fields": [
+      "field",
+      "apis",
+      "state",
+      "effect"
+    ],
+    "distribution": [
+      "api_name",
+      "ips",
+      "top1_share",
+      "origin_type",
+      "hunt_worthy"
+    ]
+  },
+  "shared_tables": [
+    "anchors",
+    "apis",
+    "bridge_apis",
+    "keys",
+    "naming_quirks",
+    "pii_fields"
+  ],
+  "count_checks": [
+    {
+      "table": "apis",
+      "entry": "fact.api-count",
+      "key": "listed"
+    },
+    {
+      "table": "unnamed_groups",
+      "entry": "fact.api-count",
+      "key": "unnamed_groups"
+    }
+  ],
+  "enums": {
+    "apis.lane": [
+      "partner",
+      "consumer",
+      "health",
+      "probe",
+      "tiny",
+      "internal",
+      "other"
+    ],
+    "apis.hunt_verdict": [
+      "hunt",
+      "baseline-only",
+      "probe-lane",
+      "drop"
+    ],
+    "pii_fields.state": [
+      "raw",
+      "hashed",
+      "masked",
+      "mixed"
+    ],
+    "auth_types.decodable": [
+      "yes",
+      "no",
+      "partly"
+    ],
+    "auth_types.machine_or_user": [
+      "machine",
+      "user",
+      "both",
+      "unknown"
+    ],
+    "keys.verdict": [
+      "person",
+      "session",
+      "device",
+      "client",
+      "token",
+      "fallback",
+      "dead"
+    ],
+    "distribution.hunt_worthy": [
+      "yes",
+      "limited",
+      "per-client only",
+      "probe lane",
+      "no"
+    ],
+    "delta.kind": [
+      "added",
+      "changed",
+      "gone",
+      "unchanged-stable"
+    ],
+    "anchors.verdict": [
+      "person",
+      "person-candidate",
+      "not-person"
+    ],
+    "anchors.location": [
+      "column",
+      "jwt",
+      "body",
+      "response_body",
+      "query"
+    ],
+    "bridge_apis.role": [
+      "bridge",
+      "issuer",
+      "anchored"
+    ]
+  },
+  "lane_verdicts": {
+    "partner": [
+      "hunt",
+      "baseline-only"
+    ],
+    "consumer": [
+      "hunt",
+      "baseline-only"
+    ],
+    "health": [
+      "drop"
+    ],
+    "probe": [
+      "probe-lane"
+    ],
+    "tiny": [
+      "baseline-only",
+      "drop"
+    ],
+    "internal": [
+      "drop"
+    ],
+    "other": [
+      "hunt",
+      "baseline-only",
+      "drop"
+    ]
+  },
+  "verdict_consistency": {
+    "hunt_requires_worthy": [
+      "yes",
+      "limited",
+      "per-client only"
+    ]
+  },
+  "conditional_tables": {
+    "long_tail": {
+      "columns": [
+        "group",
+        "apis",
+        "spans",
+        "share",
+        "lane",
+        "hunt_verdict",
+        "evidence",
+        "reading"
+      ],
+      "when": {
+        "entry": "fact.api-count",
+        "key": "tail_apis",
+        "gt": 0
+      }
+    },
+    "delta": {
+      "columns": [
+        "kind",
+        "id",
+        "change",
+        "old",
+        "new"
+      ],
+      "when": {
+        "entry": "fact.profile-run",
+        "key": "prior_runs",
+        "gt": 0
+      }
+    },
+    "anchors": {
+      "columns": [
+        "anchor",
+        "location",
+        "key",
+        "claim",
+        "spans",
+        "distinct",
+        "apis",
+        "eq_user_identifier",
+        "verdict",
+        "evidence"
+      ],
+      "when": {
+        "entry": "fact.journey-window",
+        "key": "spans",
+        "gt": 0
+      }
+    },
+    "bridge_apis": {
+      "columns": [
+        "api_name",
+        "role",
+        "spans",
+        "anchored_spans",
+        "sets_cookie_no_anchor",
+        "carriers",
+        "issues",
+        "login_fields"
+      ],
+      "when": {
+        "entry": "fact.journey-window",
+        "key": "spans",
+        "gt": 0
+      }
+    }
+  }
+}

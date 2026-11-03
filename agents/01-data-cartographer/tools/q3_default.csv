@@ -1,0 +1,13 @@
+pattern,answer,reason
+"(?i)(health|ping\b|heartbeat|readiness|liveness|/ready\b|/alive\b|metrics|telemetry|beacon|/analytics|tracking-pixel|jwks|well-known|openid-configuration)",no,"Health, telemetry or public metadata: nothing to abuse on its own"
+"(?i)(/static/|\.(css|js|png|jpe?g|gif|svg|ico|woff2?|ttf|map)\b|favicon|robots\.txt|sitemap|/fonts?\b|/themes?\b|/styles?\b)",no,"Static asset or page chrome: content for anyone"
+"(?i)(oauth|token|login|log-in|signin|sign-in|signup|sign-up|register|password|passwd|otp|mfa|2fa|two.?factor|verif|authent|authoriz|sso|saml|reauth|credential|session)",yes,"Credentials, sign-in or identity check: stuffing, takeover and token abuse"
+"(?i)(payment|billing|invoice|checkout|cart|order|refund|payout|transfer|wallet|balance|transaction|subscription|coupon|discount|promo|voucher|gift|credits?\b|loyalty|price|pricing|quote)",yes,"Money, orders or value: fraud, price and promo abuse"
+"(?i)(account|profile|users?\b|member|customer|contact|address|identity|kyc|subscriber|person)",yes,"Account or personal data: enumeration and scraping"
+"(?i)(message|sms|mms|email|mail|notif|newsletter|campaign|invite|chat|comment|review|\bposts?\b|submission|\bforms?\b)",yes,"Messaging or user-written content: spam, relay and stored-content abuse"
+"(?i)(admin|roles?\b|permission|secret|api-?keys?\b)",yes,"Admin, permission or key management: privilege abuse"
+"(?i)(upload|import|attachment|export|download)",yes,"File upload or bulk export: malicious upload and data exfiltration"
+"(?i)(webhook|callback)",yes,"Inbound webhook or callback: spoofed events and SSRF"
+"(?i)(__schema|introspection|graphql|/mcp\b)",yes,"Schema discovery or generic query surface: reconnaissance"
+"(?i)(products?\b|catalog|inventory|listings?\b|sku)",yes,"Catalogue of goods or listings: scraping and tampering"
+"(?i)(search|lookup|find|check|eligib|availability|location|geo)",yes,"Lookup or check of data: enumeration and scraping"

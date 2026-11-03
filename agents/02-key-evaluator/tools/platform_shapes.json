@@ -1,0 +1,1599 @@
+{
+ "mutations": {
+  "CreateEntityDerivationConfig": {
+   "input": {
+    "list": false,
+    "required": false,
+    "type": "MUTATION_entityDerivationConfigService___CreateEntityDerivationConfigRequest___Input"
+   }
+  },
+  "createSessionIdentificationRuleV2": {
+   "create": {
+    "list": false,
+    "required": true,
+    "type": "InputCreateSessionIdentificationRule"
+   }
+  },
+  "createUserAttributionRuleV2": {
+   "create": {
+    "list": false,
+    "required": true,
+    "type": "InputCreateUserAttributionRule"
+   }
+  }
+ },
+ "types": {
+  "InputCreateSessionIdentificationRule": {
+   "fields": {
+    "description": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "name": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    },
+    "scope": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionIdentificationRuleScope"
+    },
+    "sessionTokenRules": {
+     "list": true,
+     "required": true,
+     "type": "InputSessionTokenRule"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputCreateUserAttributionRule": {
+   "fields": {
+    "authTypeRule": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenRule"
+    },
+    "customTokenRules": {
+     "list": true,
+     "required": true,
+     "type": "InputUserAttributionCustomTokenRule"
+    },
+    "description": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "name": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    },
+    "rootTokenRule": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionRootTokenRule"
+    },
+    "scope": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionRuleScopeV2"
+    },
+    "source": {
+     "list": false,
+     "required": false,
+     "type": "UserAttributionRuleSource"
+    },
+    "status": {
+     "list": false,
+     "required": true,
+     "type": "InputUserAttributionRuleStatus"
+    },
+    "template": {
+     "list": false,
+     "required": true,
+     "type": "UserAttributionRuleTemplate"
+    },
+    "userIdRule": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenRule"
+    },
+    "userRoleRule": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenRule"
+    },
+    "userScopeRule": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenRule"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionAttributeExpiration": {
+   "fields": {
+    "expirationFormat": {
+     "list": false,
+     "required": true,
+     "type": "SessionExpirationFormat"
+    },
+    "projectionRoot": {
+     "list": false,
+     "required": true,
+     "type": "InputSessionProjectionRoot"
+    },
+    "responseAttributeKeyLocation": {
+     "list": false,
+     "required": true,
+     "type": "SessionResponseAttributeKeyLocation"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionAttributePredicate": {
+   "fields": {
+    "attributeKeyLocationType": {
+     "list": false,
+     "required": true,
+     "type": "SessionAttributeKeyLocationType"
+    },
+    "attributeProjection": {
+     "list": false,
+     "required": true,
+     "type": "InputSessionAttributeProjection"
+    },
+    "matchCondition": {
+     "list": false,
+     "required": true,
+     "type": "InputSessionMatchCondition"
+    },
+    "requestAttributeKeyLocation": {
+     "list": false,
+     "required": false,
+     "type": "SessionRequestAttributeKeyLocation"
+    },
+    "responseAttributeKeyLocation": {
+     "list": false,
+     "required": false,
+     "type": "SessionResponseAttributeKeyLocation"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionAttributeProjection": {
+   "fields": {
+    "matchCondition": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionMatchCondition"
+    },
+    "valueProjections": {
+     "list": true,
+     "required": false,
+     "type": "InputSessionValueProjection"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionCustomAttributeRule": {
+   "fields": {
+    "customAttributeRuleType": {
+     "list": false,
+     "required": true,
+     "type": "SessionCustomAttributeRuleType"
+    },
+    "jwtAttributionRule": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionJwtAttributionRule"
+    },
+    "jwtClaimAttribute": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionCustomProjection": {
+   "fields": {
+    "customJson": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionIdentificationRuleScope": {
+   "fields": {
+    "environmentNames": {
+     "list": true,
+     "required": false,
+     "type": "String"
+    },
+    "serviceNameRegexes": {
+     "list": true,
+     "required": false,
+     "type": "String"
+    },
+    "serviceNames": {
+     "list": true,
+     "required": false,
+     "type": "String"
+    },
+    "urlMatchRegexes": {
+     "list": true,
+     "required": false,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionJsonPathProjection": {
+   "fields": {
+    "path": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionJwtAttributeExtraction": {
+   "fields": {
+    "header": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "jwtAttributionCaptureType": {
+     "list": false,
+     "required": true,
+     "type": "SessionJwtAttributionCaptureType"
+    },
+    "jwtAttributionSourceType": {
+     "list": false,
+     "required": true,
+     "type": "SessionJwtAttributionSourceType"
+    },
+    "payloadClaimName": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "regexCaptureGroup": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionJwtAttributionRule": {
+   "fields": {
+    "jwtAttributeExtractionList": {
+     "list": true,
+     "required": true,
+     "type": "InputSessionJwtAttributeExtraction"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionJwtPayloadClaimProjection": {
+   "fields": {
+    "claim": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionLogicalPredicate": {
+   "fields": {
+    "children": {
+     "list": true,
+     "required": true,
+     "type": "InputSessionPredicate"
+    },
+    "operator": {
+     "list": false,
+     "required": true,
+     "type": "LogicalOperator"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionMatchCondition": {
+   "fields": {
+    "matchOperator": {
+     "list": false,
+     "required": true,
+     "type": "SessionMatchOperator"
+    },
+    "stringValue": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionPredicate": {
+   "fields": {
+    "attributePredicate": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionAttributePredicate"
+    },
+    "customProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionCustomProjection"
+    },
+    "logicalPredicate": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionLogicalPredicate"
+    },
+    "predicateType": {
+     "list": false,
+     "required": true,
+     "type": "SessionPredicateType"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionProjectionRoot": {
+   "fields": {
+    "attributeProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionAttributeProjection"
+    },
+    "customProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionCustomProjection"
+    },
+    "projectionType": {
+     "list": false,
+     "required": true,
+     "type": "SessionProjectionType"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionRegexCaptureGroupProjection": {
+   "fields": {
+    "regexCaptureGroup": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionRequestSessionTokenDetails": {
+   "fields": {
+    "customAttributeRule": {
+     "list": true,
+     "required": false,
+     "type": "InputSessionCustomAttributeRule"
+    },
+    "expirationType": {
+     "list": false,
+     "required": false,
+     "type": "SessionExpirationType"
+    },
+    "requestAttributeKeyLocation": {
+     "list": false,
+     "required": true,
+     "type": "SessionRequestAttributeKeyLocation"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionResponseSessionTokenDetails": {
+   "fields": {
+    "attributeExpiration": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionAttributeExpiration"
+    },
+    "customAttributeRule": {
+     "list": true,
+     "required": false,
+     "type": "InputSessionCustomAttributeRule"
+    },
+    "expirationType": {
+     "list": false,
+     "required": false,
+     "type": "SessionExpirationType"
+    },
+    "responseAttributeKeyLocation": {
+     "list": false,
+     "required": true,
+     "type": "SessionResponseAttributeKeyLocation"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionTokenRule": {
+   "fields": {
+    "predicate": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionPredicate"
+    },
+    "requestSessionTokenDetails": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionRequestSessionTokenDetails"
+    },
+    "responseSessionTokenDetails": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionResponseSessionTokenDetails"
+    },
+    "sessionTokenValueRule": {
+     "list": false,
+     "required": true,
+     "type": "InputSessionTokenValueRule"
+    },
+    "tokenType": {
+     "list": false,
+     "required": true,
+     "type": "SessionTokenType"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionTokenValueRule": {
+   "fields": {
+    "obfuscationStrategy": {
+     "list": false,
+     "required": false,
+     "type": "SessionObfuscationStrategy"
+    },
+    "projectionRoot": {
+     "list": false,
+     "required": true,
+     "type": "InputSessionProjectionRoot"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputSessionValueProjection": {
+   "fields": {
+    "jsonPathProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionJsonPathProjection"
+    },
+    "jwtPayloadClaimProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionJwtPayloadClaimProjection"
+    },
+    "regexCaptureGroupProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputSessionRegexCaptureGroupProjection"
+    },
+    "valueProjectionType": {
+     "list": false,
+     "required": true,
+     "type": "SessionValueProjectionType"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionCustomTokenRule": {
+   "fields": {
+    "attributeName": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    },
+    "attributeProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenAttributeProjection"
+    },
+    "customProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenCustomProjection"
+    },
+    "literalValueProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenLiteralValueProjection"
+    },
+    "obfuscationStrategy": {
+     "list": false,
+     "required": false,
+     "type": "UserAttributionTokenObfuscationStrategy"
+    },
+    "predicate": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenPredicate"
+    },
+    "projectionType": {
+     "list": false,
+     "required": true,
+     "type": "UserAttributionTokenProjectionType"
+    },
+    "rootRelativeProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenRootRelativeProjection"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionRootTokenRule": {
+   "fields": {
+    "attributeProjection": {
+     "list": false,
+     "required": true,
+     "type": "InputUserAttributionTokenAttributeProjection"
+    },
+    "predicate": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenPredicate"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionRuleScopeV2": {
+   "fields": {
+    "environmentNames": {
+     "list": true,
+     "required": false,
+     "type": "String"
+    },
+    "serviceNameRegexes": {
+     "list": true,
+     "required": false,
+     "type": "String"
+    },
+    "serviceNames": {
+     "list": true,
+     "required": false,
+     "type": "String"
+    },
+    "urlMatchRegexes": {
+     "list": true,
+     "required": false,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionRuleStatus": {
+   "fields": {
+    "disabled": {
+     "list": false,
+     "required": true,
+     "type": "Boolean"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenAttributeProjection": {
+   "fields": {
+    "attributeKeyLocation": {
+     "list": false,
+     "required": true,
+     "type": "UserAttributionTokenKeyLocation"
+    },
+    "matchCondition": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenKeyMatchCondition"
+    },
+    "valueProjections": {
+     "list": true,
+     "required": false,
+     "type": "InputUserAttributionTokenValueProjection"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenCustomProjection": {
+   "fields": {
+    "customJson": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenJsonPathProjection": {
+   "fields": {
+    "path": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenJwtPayloadClaimProjection": {
+   "fields": {
+    "claim": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenKeyMatchCondition": {
+   "fields": {
+    "matchOperator": {
+     "list": false,
+     "required": true,
+     "type": "UserAttributionTokenKeyMatchOperator"
+    },
+    "stringValue": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenKeyPredicate": {
+   "fields": {
+    "attributeProjection": {
+     "list": false,
+     "required": true,
+     "type": "InputUserAttributionTokenAttributeProjection"
+    },
+    "valueMatchCondition": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenValueMatchCondition"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenLiteralValueProjection": {
+   "fields": {
+    "literalValue": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenLogicalPredicate": {
+   "fields": {
+    "children": {
+     "list": true,
+     "required": true,
+     "type": "InputUserAttributionTokenPredicate"
+    },
+    "operator": {
+     "list": false,
+     "required": true,
+     "type": "LogicalOperator"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenPredicate": {
+   "fields": {
+    "attributePredicate": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenKeyPredicate"
+    },
+    "logicalPredicate": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenLogicalPredicate"
+    },
+    "predicateType": {
+     "list": false,
+     "required": true,
+     "type": "UserAttributionTokenPredicateType"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenRegexCaptureGroupProjection": {
+   "fields": {
+    "regexCaptureGroup": {
+     "list": false,
+     "required": true,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenRootRelativeProjection": {
+   "fields": {
+    "valueProjections": {
+     "list": true,
+     "required": false,
+     "type": "InputUserAttributionTokenValueProjection"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenRule": {
+   "fields": {
+    "attributeProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenAttributeProjection"
+    },
+    "customProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenCustomProjection"
+    },
+    "literalValueProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenLiteralValueProjection"
+    },
+    "obfuscationStrategy": {
+     "list": false,
+     "required": false,
+     "type": "UserAttributionTokenObfuscationStrategy"
+    },
+    "predicate": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenPredicate"
+    },
+    "projectionType": {
+     "list": false,
+     "required": true,
+     "type": "UserAttributionTokenProjectionType"
+    },
+    "rootRelativeProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenRootRelativeProjection"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenUrlDecodeStringProjection": {
+   "fields": {
+    "quotePlus": {
+     "list": false,
+     "required": true,
+     "type": "Boolean"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenValueMatchCondition": {
+   "fields": {
+    "matchOperator": {
+     "list": false,
+     "required": true,
+     "type": "UserAttributionTokenValueMatchOperator"
+    },
+    "stringValue": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "InputUserAttributionTokenValueProjection": {
+   "fields": {
+    "jsonPathProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenJsonPathProjection"
+    },
+    "jwtPayloadClaimProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenJwtPayloadClaimProjection"
+    },
+    "regexCaptureGroupProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenRegexCaptureGroupProjection"
+    },
+    "urlDecodeStringProjection": {
+     "list": false,
+     "required": false,
+     "type": "InputUserAttributionTokenUrlDecodeStringProjection"
+    },
+    "valueProjectionType": {
+     "list": false,
+     "required": true,
+     "type": "UserAttributionTokenValueProjectionType"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "LogicalOperator": {
+   "kind": "ENUM",
+   "values": [
+    "AND",
+    "OR",
+    "NOT"
+   ]
+  },
+  "MUTATION_entityDerivationConfigService___ComplexDataModelEventKind___Input": {
+   "fields": {
+    "array_of": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___ComplexDataModelEventKind___Input"
+    },
+    "array_of___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "kind_id": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "string_map_of": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___ComplexDataModelEventKind___Input"
+    },
+    "string_map_of___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___CreateEntityDerivationConfigRequest___Input": {
+   "fields": {
+    "data": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___EntityDerivationConfigData___Input"
+    },
+    "data___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___EntityCategory___": {
+   "kind": "ENUM",
+   "values": [
+    "ENTITY_CATEGORY_UNSPECIFIED",
+    "ENTITY_CATEGORY_SYSTEM",
+    "ENTITY_CATEGORY_MANDATORY",
+    "ENTITY_CATEGORY_RECOMMENDED",
+    "ENTITY_CATEGORY_CUSTOM"
+   ]
+  },
+  "MUTATION_entityDerivationConfigService___EntityDerivationConfigData___Input": {
+   "fields": {
+    "category": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___EntityCategory___"
+    },
+    "description": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "disabled": {
+     "list": false,
+     "required": false,
+     "type": "Boolean"
+    },
+    "display_name": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "event_kind": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___ComplexDataModelEventKind___Input"
+    },
+    "event_kind___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "filter_only": {
+     "list": false,
+     "required": false,
+     "type": "Boolean"
+    },
+    "internal": {
+     "list": false,
+     "required": false,
+     "type": "Boolean"
+    },
+    "monitor_only": {
+     "list": false,
+     "required": false,
+     "type": "Boolean"
+    },
+    "parent_derivation": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___ParentDerivation___Input"
+    },
+    "parent_derivation___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "prepopulated_span_attribute": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___PrepopulatedSpanAttribute___Input"
+    },
+    "prepopulated_span_attribute___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "span_projection": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___SpanProjection___Input"
+    },
+    "span_projection___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___EntityScope___Input": {
+   "fields": {
+    "entity_ids": {
+     "list": true,
+     "required": false,
+     "type": "String"
+    },
+    "entity_ids___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "entity_type": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___EntityType___"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___EntityType___": {
+   "kind": "ENUM",
+   "values": [
+    "ENTITY_TYPE_UNSPECIFIED",
+    "ENTITY_TYPE_API",
+    "ENTITY_TYPE_SERVICE"
+   ]
+  },
+  "MUTATION_entityDerivationConfigService___EnvironmentScope___Input": {
+   "fields": {
+    "environments": {
+     "list": true,
+     "required": false,
+     "type": "String"
+    },
+    "environments___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___EventDerivationConfigDetails___Input": {
+   "fields": {
+    "disabled": {
+     "list": false,
+     "required": false,
+     "type": "Boolean"
+    },
+    "name": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "pipeline": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___TransformationPipeline___Input"
+    },
+    "pipeline___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "scope": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___Scope___Input"
+    },
+    "scope___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "span_extraction": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___SpanBasedExtraction___Input"
+    },
+    "span_extraction___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___ExtractionLocationType___": {
+   "kind": "ENUM",
+   "values": [
+    "EXTRACTION_LOCATION_TYPE_UNSPECIFIED",
+    "EXTRACTION_LOCATION_TYPE_REQUEST_HEADER",
+    "EXTRACTION_LOCATION_TYPE_REQUEST_BODY",
+    "EXTRACTION_LOCATION_TYPE_REQUEST_QUERY_PARAM",
+    "EXTRACTION_LOCATION_TYPE_REQUEST_COOKIE",
+    "EXTRACTION_LOCATION_TYPE_RESPONSE_HEADER",
+    "EXTRACTION_LOCATION_TYPE_RESPONSE_BODY",
+    "EXTRACTION_LOCATION_TYPE_RESPONSE_COOKIE",
+    "EXTRACTION_LOCATION_TYPE_SPAN_ATTRIBUTE"
+   ]
+  },
+  "MUTATION_entityDerivationConfigService___ExtractionLocation___Input": {
+   "fields": {
+    "key": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "key_match_type": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___KeyMatchType___"
+    },
+    "location_type": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___ExtractionLocationType___"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___FilterOperator___": {
+   "kind": "ENUM",
+   "values": [
+    "FILTER_OPERATOR_UNSPECIFIED",
+    "FILTER_OPERATOR_EQ",
+    "FILTER_OPERATOR_NEQ",
+    "FILTER_OPERATOR_GT",
+    "FILTER_OPERATOR_LT",
+    "FILTER_OPERATOR_GTE",
+    "FILTER_OPERATOR_LTE",
+    "FILTER_OPERATOR_REGEX_MATCHES",
+    "FILTER_OPERATOR_CONTAINS"
+   ]
+  },
+  "MUTATION_entityDerivationConfigService___KeyMatchType___": {
+   "kind": "ENUM",
+   "values": [
+    "KEY_MATCH_TYPE_UNSPECIFIED",
+    "KEY_MATCH_TYPE_EXACT",
+    "KEY_MATCH_TYPE_REGEX",
+    "KEY_MATCH_TYPE_PREFIX",
+    "KEY_MATCH_TYPE_CONTAINS"
+   ]
+  },
+  "MUTATION_entityDerivationConfigService___ListValue___Input": {
+   "fields": {
+    "values": {
+     "list": true,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___Value___Input"
+    },
+    "values___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___NullValue___": {
+   "kind": "ENUM",
+   "values": [
+    "NULL_VALUE"
+   ]
+  },
+  "MUTATION_entityDerivationConfigService___ParentDerivation___Input": {
+   "fields": {
+    "parent_entity_derivation_id": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "pipeline": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___TransformationPipeline___Input"
+    },
+    "pipeline___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___PrepopulatedSpanAttribute___Input": {
+   "fields": {
+    "placeholder": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___Scope___Input": {
+   "fields": {
+    "entity_scope": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___EntityScope___Input"
+    },
+    "entity_scope___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "environment_scope": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___EnvironmentScope___Input"
+    },
+    "environment_scope___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "span_based_scope": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___SpanBasedScope___Input"
+    },
+    "span_based_scope___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___SpanBasedExtraction___Input": {
+   "fields": {
+    "location": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___ExtractionLocation___Input"
+    },
+    "location___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___SpanBasedFilter___Input": {
+   "fields": {
+    "location": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___ExtractionLocation___Input"
+    },
+    "location___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "operator": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___FilterOperator___"
+    },
+    "value": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___Value___Input"
+    },
+    "value___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___SpanBasedScope___Input": {
+   "fields": {
+    "filters": {
+     "list": true,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___SpanBasedFilter___Input"
+    },
+    "filters___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___SpanProjection___Input": {
+   "fields": {
+    "event_derivation_configs": {
+     "list": true,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___EventDerivationConfigDetails___Input"
+    },
+    "event_derivation_configs___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___Struct___Input": {
+   "fields": {
+    "fields": {
+     "list": true,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService_google_protobuf_Struct_FieldsEntry___fields___MapInput"
+    },
+    "fields___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___TransformationFunctionInvocation___Input": {
+   "fields": {
+    "function_id": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "parameter_values": {
+     "list": true,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService_ai_traceable_fraud_datamodel_event_kind_v1_TransformationFunctionInvocation_ParameterValuesEntry___parameter_values___MapInput"
+    },
+    "parameter_values___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___TransformationPipeline___Input": {
+   "fields": {
+    "transformation_pipeline": {
+     "list": true,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___TransformationFunctionInvocation___Input"
+    },
+    "transformation_pipeline___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService___Value___Input": {
+   "fields": {
+    "bool_value": {
+     "list": false,
+     "required": false,
+     "type": "Boolean"
+    },
+    "list_value": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___ListValue___Input"
+    },
+    "list_value___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    },
+    "null_value": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___NullValue___"
+    },
+    "number_value": {
+     "list": false,
+     "required": false,
+     "type": "Float"
+    },
+    "string_value": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "struct_value": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___Struct___Input"
+    },
+    "struct_value___JSON": {
+     "list": false,
+     "required": false,
+     "type": "JSON"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService_ai_traceable_fraud_datamodel_event_kind_v1_TransformationFunctionInvocation_ParameterValuesEntry___parameter_values___MapInput": {
+   "fields": {
+    "key": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "value": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___Value___Input"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "MUTATION_entityDerivationConfigService_google_protobuf_Struct_FieldsEntry___fields___MapInput": {
+   "fields": {
+    "key": {
+     "list": false,
+     "required": false,
+     "type": "String"
+    },
+    "value": {
+     "list": false,
+     "required": false,
+     "type": "MUTATION_entityDerivationConfigService___Value___Input"
+    }
+   },
+   "kind": "INPUT"
+  },
+  "SessionAttributeKeyLocationType": {
+   "kind": "ENUM",
+   "values": [
+    "REQUEST",
+    "RESPONSE"
+   ]
+  },
+  "SessionCustomAttributeRuleType": {
+   "kind": "ENUM",
+   "values": [
+    "JWT_ATTRIBUTE"
+   ]
+  },
+  "SessionExpirationFormat": {
+   "kind": "ENUM",
+   "values": [
+    "DURATION_SECONDS",
+    "TIMESTAMP_EPOCH_SECONDS",
+    "DURATION_MILLIS",
+    "TIMESTAMP_EPOCH_MILLIS"
+   ]
+  },
+  "SessionExpirationType": {
+   "kind": "ENUM",
+   "values": [
+    "JWT",
+    "ATTRIBUTE"
+   ]
+  },
+  "SessionJwtAttributionCaptureType": {
+   "kind": "ENUM",
+   "values": [
+    "REGEX_CAPTURE_GROUP",
+    "RAW_VALUE"
+   ]
+  },
+  "SessionJwtAttributionSourceType": {
+   "kind": "ENUM",
+   "values": [
+    "HEADER",
+    "PAYLOAD_CLAIM"
+   ]
+  },
+  "SessionMatchOperator": {
+   "kind": "ENUM",
+   "values": [
+    "EQUALS",
+    "NOT_EQUALS",
+    "STARTS_WITH",
+    "CONTAINS",
+    "MATCHES_REGEX",
+    "NOT_STARTS_WITH",
+    "NOT_CONTAINS",
+    "NOT_MATCHES_REGEX"
+   ]
+  },
+  "SessionObfuscationStrategy": {
+   "kind": "ENUM",
+   "values": [
+    "HASH"
+   ]
+  },
+  "SessionPredicateType": {
+   "kind": "ENUM",
+   "values": [
+    "ATTRIBUTE",
+    "CUSTOM",
+    "LOGICAL"
+   ]
+  },
+  "SessionProjectionType": {
+   "kind": "ENUM",
+   "values": [
+    "CUSTOM",
+    "ATTRIBUTE"
+   ]
+  },
+  "SessionRequestAttributeKeyLocation": {
+   "kind": "ENUM",
+   "values": [
+    "HEADER",
+    "COOKIE",
+    "BODY",
+    "BODY_PARAMETER",
+    "QUERY_PARAMETER"
+   ]
+  },
+  "SessionResponseAttributeKeyLocation": {
+   "kind": "ENUM",
+   "values": [
+    "HEADER",
+    "COOKIE",
+    "BODY",
+    "BODY_PARAMETER"
+   ]
+  },
+  "SessionTokenType": {
+   "kind": "ENUM",
+   "values": [
+    "REQUEST",
+    "RESPONSE",
+    "CUSTOM"
+   ]
+  },
+  "SessionValueProjectionType": {
+   "kind": "ENUM",
+   "values": [
+    "REGEX_CAPTURE_GROUP",
+    "JSON_PATH",
+    "JWT_PAYLOAD_CLAIM",
+    "BASE64"
+   ]
+  },
+  "UserAttributionRuleSource": {
+   "kind": "ENUM",
+   "values": [
+    "USER",
+    "AUTOMATIC"
+   ]
+  },
+  "UserAttributionRuleTemplate": {
+   "kind": "ENUM",
+   "values": [
+    "BASIC",
+    "JWT",
+    "CUSTOM"
+   ]
+  },
+  "UserAttributionTokenKeyLocation": {
+   "kind": "ENUM",
+   "values": [
+    "REQUEST_HEADER",
+    "REQUEST_COOKIE",
+    "REQUEST_BODY",
+    "REQUEST_QUERY_PARAMETER",
+    "RESPONSE_HEADER",
+    "RESPONSE_COOKIE",
+    "RESPONSE_BODY",
+    "SPAN_ATTRIBUTE"
+   ]
+  },
+  "UserAttributionTokenKeyMatchOperator": {
+   "kind": "ENUM",
+   "values": [
+    "EQUALS",
+    "STARTS_WITH",
+    "CONTAINS",
+    "MATCHES_REGEX"
+   ]
+  },
+  "UserAttributionTokenObfuscationStrategy": {
+   "kind": "ENUM",
+   "values": [
+    "HASH"
+   ]
+  },
+  "UserAttributionTokenPredicateType": {
+   "kind": "ENUM",
+   "values": [
+    "ATTRIBUTE",
+    "LOGICAL"
+   ]
+  },
+  "UserAttributionTokenProjectionType": {
+   "kind": "ENUM",
+   "values": [
+    "CUSTOM",
+    "ATTRIBUTE",
+    "LITERAL_VALUE",
+    "ROOT_RELATIVE"
+   ]
+  },
+  "UserAttributionTokenValueMatchOperator": {
+   "kind": "ENUM",
+   "values": [
+    "EQUALS",
+    "NOT_EQUALS",
+    "STARTS_WITH",
+    "CONTAINS",
+    "MATCHES_REGEX"
+   ]
+  },
+  "UserAttributionTokenValueProjectionType": {
+   "kind": "ENUM",
+   "values": [
+    "REGEX_CAPTURE_GROUP",
+    "JSON_PATH",
+    "JWT_PAYLOAD_CLAIM",
+    "BASE64",
+    "URL_DECODE_STRING"
+   ]
+  }
+ }
+}
